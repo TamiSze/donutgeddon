@@ -6,6 +6,7 @@ background = pygame.image.load('lard_lad_donuts_new.png')
 #quelle http://theawesomedaily.com/homer-simpson-famous-donut-recipe/
 game_on_background = pygame.image.load('game_on_background.png')
 #other background, trashcan: http://vignette2.wikia.nocookie.net/simpsonstappedout/images/b/b4/Garbage_Can_Pack_Menu.png/revision/latest?cb=20160707213053
+doh = pygame.image.load('Homer_Doh.png')
 width = 640
 height = 480
 running = True
@@ -29,15 +30,28 @@ donut_image = pygame.image.load('Donut.png')
 heart_image = pygame.image.load('Heart.png')
 thrower_image = pygame.image.load('Thrower.png')
 # Tami hat hier was geaendert
-donut_fly_image = pygame.image.load('Donut_fly.png')
+thrower_count = 0
+donut_fly1 = pygame.image.load('Donut_fly1.png')
+donut_fly2 = pygame.image.load('Donut_fly2.png')
+donut_fly3 = pygame.image.load('Donut_fly3.png')
+donut_fly4 = pygame.image.load('Donut_fly4.png')
+donut_fly5 = pygame.image.load('Donut_fly5.png')
+donut_fly_list =[donut_fly1,donut_fly2,donut_fly3,donut_fly4,donut_fly5]
+fly_count=0
+homer_eats_imgs = ['Catcher_mouth_open.png','Catcher_eating.png']
+homer_eats = {}
+for img in homer_eats_imgs:
+	homer_eats[img] = pygame.image.load(img)
+thrower_images = ['Thrower_breath_in.png','Thrower_shooting.png']
+thrower_list = {}
+for img in thrower_images:
+	thrower_list[img] = pygame.image.load(img)
 ##
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 pygame.font.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
 pygame.init
-
-
 
 	
 def engine():
@@ -48,7 +62,6 @@ def engine():
 def draw_objects(): 
 	draw_points()
 	if game_on==True:
-		#tami: rotation ist nur hier moeglich
 		if path_taken == 0:
 			thrower_new_image = pygame.transform.rotate(thrower_image,20)
 		if path_taken == 1:
@@ -56,14 +69,14 @@ def draw_objects():
 		if path_taken == 2:
 			thrower_new_image = pygame.transform.rotate(thrower_image,340)
 		screen.blit(thrower_new_image,((width/13)*2,((height/8)*3)))
-		########
-        # tami aenderung
-		screen.blit(donut_fly_image,(ball_x,ball_y))
-        #
- #       if event.key == pygame.K_SPACE:
- #       	draw_mouth_open()
- #       else:
- 		if checker_active == 0:
+		#tami: rotation ist nur hier moeglich
+		global fly_count
+        screen.blit(donut_fly_list[fly_count],(ball_x,ball_y))
+        if fly_count == 4:
+        	fly_count = 0
+        else:
+        	fly_count = fly_count + 1
+        if checker_active == 0:
 			screen.blit(catcher_image,((width/10)*8,((height/7))))
        	if checker_active == 1:
        		screen.blit(catcher_image,((width/10)*8,((height/7)*3)))	
@@ -75,26 +88,7 @@ def draw_objects():
 		diff = myfont.render('difficulty:  ' + difficulty_text, False, (255,255,255))
 		screen.blit(diff,(width/4, height/4))
 		screen.blit(text,(width/4, height/2))			
-
-#def draw_catcher():
-#	if game_on:
-#		if checker_active == 0:
-#			screen.blit(catcher_image,((width/10)*8,((height/7))))
-#      	if checker_active == 1:
-#       	screen.blit(catcher_image,((width/10)*8,((height/7)*3)))
-#      	if checker_active == 2:
-#       	screen.blit(catcher_image,((width/10)*8,((height/7*5))))
-
-		
-#def draw_mouth_open():
-#	checker = True
-#	if game_on:
-#		if checker_active == 0:
-#			screen.blit(catcher_mouth_open_image,((width/10)*8,((height/7))))
-#		if checker_active == 1:
-#			screen.blit(catcher_mouth_open_image,((width/10)*8,((height/7)*3)))
-#		if checker_active == 2:
-#			screen.blit(catcher_mouth_open_image,((width/10)*8,((height/7*5))))
+    
 
 def on_ball_reset():
 	global ball_x
@@ -107,14 +101,26 @@ def on_ball_reset():
 	print speed
 	ball_x = (width/10)*2
 	ball_y = (height/7)*3
-	random_number()	
-		
+	random_number()
+	pygame.display.flip()
+	#kanone feuert ab
+	for img in thrower_images:
+		if path_taken == 0:
+			thrower_new_image = pygame.transform.rotate(thrower_list[img],20)
+		if path_taken == 1:
+			thrower_new_image = thrower_list[img]
+		if path_taken == 2:
+			thrower_new_image = pygame.transform.rotate(thrower_list[img],340)
+		screen.blit(thrower_new_image,((width/13)*2,((height/8)*3)))
+		pygame.display.flip()
+		clock.tick(5)
+	####
 def draw_points(): 
 	screen.blit(donut_image,((width/10),((height/10))))
-	text_donut = myfont.render(("" + str(points)), False, (0, 0, 0))
+	text_donut = myfont.render(("" + str(points)), False, (255, 255, 255))
 	screen.blit(text_donut,((width/20)*1,((height/10)-10)))
 	screen.blit(heart_image,((width/10),((height/10)*2)))
-	text_heart = myfont.render(('' + str(lives)), False, (0, 0, 0))
+	text_heart = myfont.render(('' + str(lives)), False, (255, 255, 255))
 	screen.blit(text_heart,((width/20)*1,(((height/10)*2)-10)))
 		
 def random_number():
@@ -133,6 +139,11 @@ def life_loss():
 	global ball_x
 	global game_on
 	if game_on:
+		#Hier wird Doh Bild (und evtl. Ton) eingefuegt
+		screen.blit(doh,(width/10,0))
+		pygame.display.flip()
+		clock.tick(2)
+		######
 		if lives == 0:
 			on_ball_reset()
 			game_on = False
@@ -143,18 +154,16 @@ def life_loss():
 def ball_move():
 	global ball_x
 	global ball_y
-	global donut_fly_image
 	if ball_x >= width:
 		life_loss()
 	else:
 		ball_x = ball_x+speed
-#		if clock ==  || clock == 
-#		donut_fly_image=pygame.transform.rotate(donut_fly_image,72)
 	if path_taken == 0:
 		ball_y = ball_y-(speed/3)
 	if path_taken == 2:	
 		ball_y = ball_y+(speed/3)
-	
+
+		
 def check_caught():
 	global points
 	global counter
@@ -163,8 +172,20 @@ def check_caught():
 			if (path_taken == checker_active):	
 				points = points + 1
 				counter = counter + 1
+				# Homer Ess Animation
+				for img in homer_eats_imgs:
+					if checker_active == 0:
+						screen.blit(homer_eats[img],((width/10)*8,((height/7))))
+					if checker_active == 1:
+						screen.blit(homer_eats[img],((width/10)*8,((height/7)*3)))	
+					if checker_active == 2:
+						screen.blit(homer_eats[img],((width/10)*8,((height/7)*5)))
+					pygame.display.flip()
+					clock.tick(7)
+				####
 				on_ball_reset()
-			
+	
+	
 def change_difficulty():
 	global difficulty
 	global difficulty_text
@@ -186,7 +207,6 @@ while running:
 		if event.type == pygame.QUIT:
 			running = False
 		if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-#			draw_mouth_open()
 			if game_on == False:
 				setup_game()
 				game_on = True
@@ -211,8 +231,6 @@ while running:
 	else:
 		screen.blit(game_on_background,(0,0))
 	#screen.fill((background))
-#	if checker == True:
-#		draw_catcher()
 	draw_objects()
 	pygame.display.flip()
 	clock.tick(60)

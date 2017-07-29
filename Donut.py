@@ -6,7 +6,6 @@ background = pygame.image.load('lard_lad_donuts_new.png')
 #quelle http://theawesomedaily.com/homer-simpson-famous-donut-recipe/
 game_on_background = pygame.image.load('game_on_background.png')
 #other background, trashcan: http://vignette2.wikia.nocookie.net/simpsonstappedout/images/b/b4/Garbage_Can_Pack_Menu.png/revision/latest?cb=20160707213053
-doh = pygame.image.load('Homer_Doh.png')
 width = 640
 height = 480
 running = True
@@ -21,37 +20,56 @@ difficulty = 9
 difficulty_text = 'easy'
 ball_x = (width/10)*2
 ball_y = (height/7)*3
-catcher_image = pygame.image.load('Catcher.png')
-# Tami hat hier was geaendert
-#checker = False
-catcher_mouth_open_image = pygame.image.load('Catcher_mouth_open.png')
-#
-donut_image = pygame.image.load('Donut.png')
-heart_image = pygame.image.load('Heart.png')
-thrower_image = pygame.image.load('Thrower.png')
-# Tami hat hier was geaendert
 thrower_count = 0
-donut_fly1 = pygame.image.load('Donut_fly1.png')
-donut_fly2 = pygame.image.load('Donut_fly2.png')
-donut_fly3 = pygame.image.load('Donut_fly3.png')
-donut_fly4 = pygame.image.load('Donut_fly4.png')
-donut_fly5 = pygame.image.load('Donut_fly5.png')
-donut_fly_list =[donut_fly1,donut_fly2,donut_fly3,donut_fly4,donut_fly5]
 fly_count=0
-homer_eats_imgs = ['Catcher_mouth_open.png','Catcher_eating.png']
-homer_eats = {}
-for img in homer_eats_imgs:
-	homer_eats[img] = pygame.image.load(img)
-thrower_images = ['Thrower_breath_in.png','Thrower_shooting.png']
-thrower_list = {}
-for img in thrower_images:
-	thrower_list[img] = pygame.image.load(img)
-##
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 pygame.font.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
 pygame.init
+pygame.mixer.init()
+
+catcher_image = pygame.image.load('Catcher.png').convert()
+transColor = catcher_image.get_at((0,0))
+catcher_image.set_colorkey(transColor)
+# Tami hat hier was geaendert
+#checker = False
+catcher_mouth_open_image = pygame.image.load('Catcher_mouth_open.png').convert()
+catcher_mouth_open_image.set_colorkey(transColor)
+#
+doh = pygame.image.load('Homer_Doh.png').convert()
+doh.set_colorkey(transColor)
+donut_image = pygame.image.load('Donut.png').convert()
+donut_image.set_colorkey(transColor)
+heart_image = pygame.image.load('Heart.png').convert()
+heart_image.set_colorkey(transColor)
+thrower_image = pygame.image.load('Thrower.png').convert()
+thrower_image.set_colorkey(transColor)
+# Tami hat hier was geaendert
+
+donut_fly1 = pygame.image.load('Donut_fly1.png').convert()
+donut_fly1.set_colorkey(transColor)
+donut_fly2 = pygame.image.load('Donut_fly2.png').convert()
+donut_fly2.set_colorkey(transColor)
+donut_fly3 = pygame.image.load('Donut_fly3.png').convert()
+donut_fly3.set_colorkey(transColor)
+donut_fly4 = pygame.image.load('Donut_fly4.png').convert()
+donut_fly4.set_colorkey(transColor)
+donut_fly5 = pygame.image.load('Donut_fly5.png').convert()
+donut_fly5.set_colorkey(transColor)
+donut_fly_list =[donut_fly1,donut_fly2,donut_fly3,donut_fly4,donut_fly5]
+
+homer_eats_imgs = ['Catcher_mouth_open.png','Catcher_eating.png']
+homer_eats = {}
+for img in homer_eats_imgs:
+	homer_eats[img] = pygame.image.load(img).convert()
+	homer_eats[img].set_colorkey(transColor)
+thrower_images = ['Thrower_breath_in.png','Thrower_shooting.png']
+thrower_list = {}
+for img in thrower_images:
+	thrower_list[img] = pygame.image.load(img).convert()
+	thrower_list[img].set_colorkey(transColor)
+#alles hier drueber hat alex umsortiert, denn pygame.init muss vor den bildern aufgerufen werden.
 
 	
 def engine():
@@ -103,6 +121,8 @@ def on_ball_reset():
 	ball_y = (height/7)*3
 	random_number()
 	pygame.display.flip()
+	pygame.mixer.music.load("Kanonenschuss.mp3")
+	pygame.mixer.music.play()
 	#kanone feuert ab
 	for img in thrower_images:
 		if path_taken == 0:
@@ -143,6 +163,10 @@ def life_loss():
 		screen.blit(doh,(width/10,0))
 		pygame.display.flip()
 		clock.tick(2)
+		#Sobald "doh" ton steht, hier anpassen und auskommentieren
+		#pygame.mixer.music.load("doh.mp3")
+		#pygame.mixer.music.play()
+		#pygame.time.delay(150)
 		######
 		if lives == 0:
 			on_ball_reset()
@@ -183,6 +207,9 @@ def check_caught():
 					pygame.display.flip()
 					clock.tick(7)
 				####
+				pygame.mixer.music.load("Schmatzen.mp3")
+				pygame.mixer.music.play()
+				pygame.time.delay(150)
 				on_ball_reset()
 	
 	

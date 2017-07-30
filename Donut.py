@@ -70,7 +70,7 @@ for img in thrower_images:
 	thrower_list[img] = pygame.image.load(img).convert()
 	thrower_list[img].set_colorkey(transColor)
 #alles hier drueber hat alex umsortiert, denn pygame.init muss vor den bildern aufgerufen werden.
-
+puffer = 0;
 	
 def engine():
 	pygame.init
@@ -89,11 +89,16 @@ def draw_objects():
 		screen.blit(thrower_new_image,((width/13)*2,((height/8)*3)))
 		#tami: rotation ist nur hier moeglich
 		global fly_count
+		global puffer
         screen.blit(donut_fly_list[fly_count],(ball_x,ball_y))
-        if fly_count == 4:
-        	fly_count = 0
-        else:
-        	fly_count = fly_count + 1
+        if puffer == 7:
+        	puffer = 0
+           	if fly_count == 4:
+        		fly_count = 0
+        	else:
+        		fly_count = fly_count + 1
+        else: 
+        	puffer = puffer + 1;
         if checker_active == 0:
 			screen.blit(catcher_image,((width/10)*8,((height/7))))
        	if checker_active == 1:

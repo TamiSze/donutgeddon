@@ -2,6 +2,8 @@ import Tkinter as Tk
 import pygame
 from random import randint
 
+
+
 background = pygame.image.load('lard_lad_donuts_new.png')
 #quelle http://theawesomedaily.com/homer-simpson-famous-donut-recipe/
 game_on_background = pygame.image.load('game_on_background.png')
@@ -167,11 +169,12 @@ def life_loss():
 		#Hier wird Doh Bild (und evtl. Ton) eingefuegt
 		screen.blit(doh,(width/10,0))
 		pygame.display.flip()
-		clock.tick(2)
+		#clock.tick(2)
 		#Sobald "doh" ton steht, hier anpassen und auskommentieren
-		#pygame.mixer.music.load("doh.mp3")
-		#pygame.mixer.music.play()
-		#pygame.time.delay(150)
+		#D'oh von http://www.richmolnar.com/simpsnd.htm
+		pygame.mixer.music.load("doh.mp3")
+		pygame.mixer.music.play()
+		pygame.time.delay(150)
 		######
 		if lives == 0:
 			on_ball_reset()

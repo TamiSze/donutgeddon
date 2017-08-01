@@ -1,9 +1,16 @@
+#Donutgeddon game-engine, code by:
+# Alexander Bodarwe
+# Klaus Weiss
+# Tamara Szecsey
+
+
 import Tkinter as Tk
 import pygame
 from random import randint
 
 
 
+#On start: Variables are being set up, images loaded from file.
 background = pygame.image.load('lard_lad_donuts_new.png')
 #quelle http://theawesomedaily.com/homer-simpson-famous-donut-recipe/
 game_on_background = pygame.image.load('game_on_background.png')
@@ -24,6 +31,7 @@ ball_x = (width/10)*2
 ball_y = (height/7)*3
 thrower_count = 0
 fly_count=0
+puffer = 0
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 pygame.font.init()
@@ -31,14 +39,12 @@ myfont = pygame.font.SysFont('Comic Sans MS', 30)
 pygame.init
 pygame.mixer.init()
 
+#Images loaded from file, also all image background being blendet out.
 catcher_image = pygame.image.load('Catcher.png').convert()
 transColor = catcher_image.get_at((0,0))
 catcher_image.set_colorkey(transColor)
-# Tami hat hier was geaendert
-#checker = False
 catcher_mouth_open_image = pygame.image.load('Catcher_mouth_open.png').convert()
 catcher_mouth_open_image.set_colorkey(transColor)
-#
 doh = pygame.image.load('Homer_Doh.png').convert()
 doh.set_colorkey(transColor)
 donut_image = pygame.image.load('Donut.png').convert()
@@ -47,8 +53,6 @@ heart_image = pygame.image.load('Heart.png').convert()
 heart_image.set_colorkey(transColor)
 thrower_image = pygame.image.load('Thrower.png').convert()
 thrower_image.set_colorkey(transColor)
-# Tami hat hier was geaendert
-
 donut_fly1 = pygame.image.load('Donut_fly1.png').convert()
 donut_fly1.set_colorkey(transColor)
 donut_fly2 = pygame.image.load('Donut_fly2.png').convert()
@@ -60,25 +64,22 @@ donut_fly4.set_colorkey(transColor)
 donut_fly5 = pygame.image.load('Donut_fly5.png').convert()
 donut_fly5.set_colorkey(transColor)
 donut_fly_list =[donut_fly1,donut_fly2,donut_fly3,donut_fly4,donut_fly5]
-
 homer_eats_imgs = ['Catcher_mouth_open.png','Catcher_eating.png']
 homer_eats = {}
+
+#Setting up animations.
 for img in homer_eats_imgs:
 	homer_eats[img] = pygame.image.load(img).convert()
 	homer_eats[img].set_colorkey(transColor)
 thrower_images = ['Thrower_breath_in.png','Thrower_shooting.png']
 thrower_list = {}
+
 for img in thrower_images:
 	thrower_list[img] = pygame.image.load(img).convert()
 	thrower_list[img].set_colorkey(transColor)
-#alles hier drueber hat alex umsortiert, denn pygame.init muss vor den bildern aufgerufen werden.
-puffer = 0;
-	
-def engine():
-	pygame.init
-	screen.fill((game_on_background))
-	draw_objects()
 
+
+#Called each tick, draws game elements, or start-screen elements.	
 def draw_objects(): 
 	draw_points()
 	if game_on==True:
@@ -89,7 +90,6 @@ def draw_objects():
 		if path_taken == 2:
 			thrower_new_image = pygame.transform.rotate(thrower_image,340)
 		screen.blit(thrower_new_image,((width/13)*2,((height/8)*3)))
-		#tami: rotation ist nur hier moeglich
 		global fly_count
 		global puffer
         screen.blit(donut_fly_list[fly_count],(ball_x,ball_y))
@@ -115,6 +115,7 @@ def draw_objects():
 		screen.blit(text,(width/4, height/2))			
     
 
+#When either a point is scored or a life is lost, ball gets reset, Kanon fires.
 def on_ball_reset():
 	global ball_x
 	global ball_y
@@ -130,7 +131,6 @@ def on_ball_reset():
 	pygame.display.flip()
 	pygame.mixer.music.load("Kanonenschuss.mp3")
 	pygame.mixer.music.play()
-	#kanone feuert ab
 	for img in thrower_images:
 		if path_taken == 0:
 			thrower_new_image = pygame.transform.rotate(thrower_list[img],20)
@@ -141,7 +141,9 @@ def on_ball_reset():
 		screen.blit(thrower_new_image,((width/13)*2,((height/8)*3)))
 		pygame.display.flip()
 		clock.tick(5)
-	####
+		
+		
+#Draws permanent objects on the left of the screen.
 def draw_points(): 
 	screen.blit(donut_image,((width/10),((height/10))))
 	text_donut = myfont.render(("" + str(points)), False, (255, 255, 255))
@@ -149,11 +151,14 @@ def draw_points():
 	screen.blit(heart_image,((width/10),((height/10)*2)))
 	text_heart = myfont.render(('' + str(lives)), False, (255, 255, 255))
 	screen.blit(text_heart,((width/20)*1,(((height/10)*2)-10)))
-		
+	
+
+#Calls a random number 1-3 and dertermines path of donut.
 def random_number():
 	global path_taken
 	path_taken = randint(0,2)
-		
+
+#Resets scores when game is lost or restartet.
 def setup_game():
 	global points
 	global lives
@@ -161,21 +166,19 @@ def setup_game():
 	lives = 3
 	on_ball_reset()
 
+
+#Called on life loss, playes D'oh sound, reduces lives, if lives < 0 ends game.
 def life_loss():
 	global lives
 	global ball_x
 	global game_on
 	if game_on:
-		#Hier wird Doh Bild (und evtl. Ton) eingefuegt
 		screen.blit(doh,(width/10,0))
 		pygame.display.flip()
-		#clock.tick(2)
-		#Sobald "doh" ton steht, hier anpassen und auskommentieren
 		#D'oh von http://www.richmolnar.com/simpsnd.htm
 		pygame.mixer.music.load("doh.mp3")
 		pygame.mixer.music.play()
 		pygame.time.delay(150)
-		######
 		if lives == 0:
 			on_ball_reset()
 			game_on = False
@@ -183,6 +186,8 @@ def life_loss():
 			lives = lives -1 
 			on_ball_reset()
 
+			
+#Updates position of the ball. Sadly floating the int does not help the path of the donut. Still quite wonky.
 def ball_move():
 	global ball_x
 	global ball_y
@@ -191,11 +196,16 @@ def ball_move():
 	else:
 		ball_x = ball_x+speed
 	if path_taken == 0:
-		ball_y = ball_y-(speed/3)
+		newInt = float(ball_y - speed/3)
+		newInt = int(newInt)
+		ball_y = newInt
 	if path_taken == 2:	
-		ball_y = ball_y+(speed/3)
+		newInt = float(ball_y + speed/3)
+		newInt = int(newInt)
+		ball_y = newInt
 
-		
+
+#When SPACE is pressed, checks if donut is within Homers reach, if so, starts Homer eats animation and sound.
 def check_caught():
 	global points
 	global counter
@@ -204,7 +214,6 @@ def check_caught():
 			if (path_taken == checker_active):	
 				points = points + 1
 				counter = counter + 1
-				# Homer Ess Animation
 				for img in homer_eats_imgs:
 					if checker_active == 0:
 						screen.blit(homer_eats[img],((width/10)*8,((height/7))))
@@ -214,13 +223,13 @@ def check_caught():
 						screen.blit(homer_eats[img],((width/10)*8,((height/7)*5)))
 					pygame.display.flip()
 					clock.tick(7)
-				####
 				pygame.mixer.music.load("Schmatzen.mp3")
 				pygame.mixer.music.play()
 				pygame.time.delay(150)
 				on_ball_reset()
 	
-	
+
+#Changes Game-difficulty on the start screen, when said screen is clicked upon.	
 def change_difficulty():
 	global difficulty
 	global difficulty_text
@@ -236,7 +245,8 @@ def change_difficulty():
 				difficulty = 9
 				difficulty_text = 'easy'	
 		
-		
+
+#Engine room. As long as game is running, this keeps getting called, checks for key-events, also for mouse-clicks. Backgrounds are implemented here too.
 while running:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -265,7 +275,6 @@ while running:
 		screen.blit(background,(0,0))
 	else:
 		screen.blit(game_on_background,(0,0))
-	#screen.fill((background))
 	draw_objects()
 	pygame.display.flip()
 	clock.tick(60)
